@@ -31,7 +31,7 @@ pub struct HumanDuration(pub Duration);
 /// assert_eq!("1.33 PiB", format!("{}", HumanBytes(1_500_000_000_000_000)));
 /// ```
 #[derive(Debug)]
-pub struct HumanBytes(pub u64);
+pub struct HumanBytes(pub u128);
 
 /// Formats bytes for human readability using SI prefixes
 ///
@@ -46,7 +46,7 @@ pub struct HumanBytes(pub u64);
 /// assert_eq!("1.50 PB", format!("{}", DecimalBytes(1_500_000_000_000_000)));
 /// ```
 #[derive(Debug)]
-pub struct DecimalBytes(pub u64);
+pub struct DecimalBytes(pub u128);
 
 /// Formats bytes for human readability using ISO/IEC prefixes
 ///
@@ -61,11 +61,11 @@ pub struct DecimalBytes(pub u64);
 /// assert_eq!("1.33 PiB", format!("{}", BinaryBytes(1_500_000_000_000_000)));
 /// ```
 #[derive(Debug)]
-pub struct BinaryBytes(pub u64);
+pub struct BinaryBytes(pub u128);
 
 /// Formats counts for human readability using commas
 #[derive(Debug)]
-pub struct HumanCount(pub u64);
+pub struct HumanCount(pub u128);
 
 /// Formats counts for human readability using commas for floats
 #[derive(Debug)]

@@ -308,12 +308,12 @@ impl ProgressStyle {
                                 .write_fmt(format_args!("{}/s", HumanFloatCount(state.per_sec())))
                                 .unwrap(),
                             "bytes_per_sec" => buf
-                                .write_fmt(format_args!("{}/s", HumanBytes(state.per_sec() as u64)))
+                                .write_fmt(format_args!("{}/s", HumanBytes(state.per_sec() as u128)))
                                 .unwrap(),
                             "binary_bytes_per_sec" => buf
                                 .write_fmt(format_args!(
                                     "{}/s",
-                                    BinaryBytes(state.per_sec() as u64)
+                                    BinaryBytes(state.per_sec() as u128)
                                 ))
                                 .unwrap(),
                             "eta_precise" => buf

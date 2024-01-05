@@ -26,7 +26,7 @@ where
     fn try_progress(self) -> Option<ProgressBarIter<Self>> {
         self.size_hint()
             .1
-            .map(|len| self.progress_count(u64::try_from(len).unwrap()))
+            .map(|len| self.progress_count(u128::try_from(len).unwrap()))
     }
 
     /// Wrap an iterator with default styling.
@@ -34,12 +34,12 @@ where
     where
         Self: ExactSizeIterator,
     {
-        let len = u64::try_from(self.len()).unwrap();
+        let len = u128::try_from(self.len()).unwrap();
         self.progress_count(len)
     }
 
     /// Wrap an iterator with an explicit element count.
-    fn progress_count(self, len: u64) -> ProgressBarIter<Self> {
+    fn progress_count(self, len: u128) -> ProgressBarIter<Self> {
         self.progress_with(ProgressBar::new(len))
     }
 
@@ -51,7 +51,7 @@ where
     where
         Self: ExactSizeIterator,
     {
-        let len = u64::try_from(self.len()).unwrap();
+        let len = u128::try_from(self.len()).unwrap();
         let bar = ProgressBar::new(len).with_style(style);
         self.progress_with(bar)
     }
@@ -92,7 +92,7 @@ impl<T> ProgressBarIter<T> {
     /// Builder-like function for setting underlying progress bar's position.
     ///
     /// See [`ProgressBar::with_position()`].
-    pub fn with_position(mut self, position: u64) -> Self {
+    pub fn with_position(mut self, position: u128) -> Self {
         self.progress = self.progress.with_position(position);
         self
     }
@@ -155,25 +155,25 @@ impl<T: FusedIterator> FusedIterator for ProgressBarIter<T> {}
 impl<R: io::Read> io::Read for ProgressBarIter<R> {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
         let inc = self.it.read(buf)?;
-        self.progress.inc(inc as u64);
+        self.progress.inc(inc as u128);
         Ok(inc)
     }
 
     fn read_vectored(&mut self, bufs: &mut [IoSliceMut<'_>]) -> io::Result<usize> {
         let inc = self.it.read_vectored(bufs)?;
-        self.progress.inc(inc as u64);
+        self.progress.inc(inc as u128);
         Ok(inc)
     }
 
     fn read_to_string(&mut self, buf: &mut String) -> io::Result<usize> {
         let inc = self.it.read_to_string(buf)?;
-        self.progress.inc(inc as u64);
+        self.progress.inc(inc as u128);
         Ok(inc)
     }
 
     fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
         self.it.read_exact(buf)?;
-        self.progress.inc(buf.len() as u64);
+        self.progress.inc(buf.len() as u128);
         Ok(())
     }
 }
@@ -185,14 +185,14 @@ impl<R: io::BufRead> io::BufRead for ProgressBarIter<R> {
 
     fn consume(&mut self, amt: usize) {
         self.it.consume(amt);
-        self.progress.inc(amt as u64);
+        self.progress.inc(amt as u128);
     }
 }
 
 impl<S: io::Seek> io::Seek for ProgressBarIter<S> {
     fn seek(&mut self, f: io::SeekFrom) -> io::Result<u64> {
         self.it.seek(f).map(|pos| {
-            self.progress.set_position(pos);
+            self.progress.set_position(pos as u128);
             pos
         })
     }
@@ -300,14 +300,14 @@ impl<S: futures_core::Stream + Unpin> futures_core::Stream for ProgressBarIter<S
 impl<W: io::Write> io::Write for ProgressBarIter<W> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         self.it.write(buf).map(|inc| {
-            self.progress.inc(inc as u64);
+            self.progress.inc(inc as u128);
             inc
         })
     }
 
     fn write_vectored(&mut self, bufs: &[io::IoSlice]) -> io::Result<usize> {
         self.it.write_vectored(bufs).map(|inc| {
-            self.progress.inc(inc as u64);
+            self.progress.inc(inc as u128);
             inc
         })
     }
@@ -343,7 +343,7 @@ mod test {
         wrap(v.iter().progress());
         wrap(v.iter().progress_count(3));
         wrap({
-            let pb = ProgressBar::new(v.len() as u64);
+            let pb = ProgressBar::new(v.len() as u128);
             v.iter().progress_with(pb)
         });
         wrap({

@@ -7,7 +7,7 @@ use std::time::Instant;
 
 #[cfg(target_arch = "wasm32")]
 use instant::Instant;
-use portable_atomic::{AtomicU64, AtomicU8, Ordering};
+use portable_atomic::{AtomicU128, AtomicU8, Ordering, AtomicU64};
 
 use crate::draw_target::ProgressDrawTarget;
 use crate::style::ProgressStyle;
@@ -22,7 +22,7 @@ pub(crate) struct BarState {
 
 impl BarState {
     pub(crate) fn new(
-        len: Option<u64>,
+        len: Option<u128>,
         draw_target: ProgressDrawTarget,
         pos: Arc<AtomicPosition>,
     ) -> Self {
@@ -96,12 +96,12 @@ impl BarState {
         }
     }
 
-    pub(crate) fn set_length(&mut self, now: Instant, len: u64) {
+    pub(crate) fn set_length(&mut self, now: Instant, len: u128) {
         self.state.len = Some(len);
         self.update_estimate_and_draw(now);
     }
 
-    pub(crate) fn inc_length(&mut self, now: Instant, delta: u64) {
+    pub(crate) fn inc_length(&mut self, now: Instant, delta: u128) {
         if let Some(len) = self.state.len {
             self.state.len = Some(len.saturating_add(delta));
         }
@@ -229,7 +229,7 @@ pub(crate) enum Reset {
 #[non_exhaustive]
 pub struct ProgressState {
     pos: Arc<AtomicPosition>,
-    len: Option<u64>,
+    len: Option<u128>,
     pub(crate) tick: u64,
     pub(crate) started: Instant,
     status: Status,
@@ -239,7 +239,7 @@ pub struct ProgressState {
 }
 
 impl ProgressState {
-    pub(crate) fn new(len: Option<u64>, pos: Arc<AtomicPosition>) -> Self {
+    pub(crate) fn new(len: Option<u128>, pos: Arc<AtomicPosition>) -> Self {
         let now = Instant::now();
         Self {
             pos,
@@ -319,20 +319,20 @@ impl ProgressState {
         self.started.elapsed()
     }
 
-    pub fn pos(&self) -> u64 {
+    pub fn pos(&self) -> u128 {
         self.pos.pos.load(Ordering::Relaxed)
     }
 
-    pub fn set_pos(&mut self, pos: u64) {
+    pub fn set_pos(&mut self, pos: u128) {
         self.pos.set(pos);
     }
 
     #[allow(clippy::len_without_is_empty)]
-    pub fn len(&self) -> Option<u64> {
+    pub fn len(&self) -> Option<u128> {
         self.len
     }
 
-    pub fn set_len(&mut self, len: u64) {
+    pub fn set_len(&mut self, len: u128) {
         self.len = Some(len);
     }
 }
@@ -406,7 +406,7 @@ impl TabExpandedString {
 pub(crate) struct Estimator {
     smoothed_steps_per_sec: f64,
     double_smoothed_steps_per_sec: f64,
-    prev_steps: u64,
+    prev_steps: u128,
     prev_time: Instant,
     start_time: Instant,
 }
@@ -422,7 +422,7 @@ impl Estimator {
         }
     }
 
-    fn record(&mut self, new_steps: u64, now: Instant) {
+    fn record(&mut self, new_steps: u128, now: Instant) {
         // sanity check: don't record data if time or steps have not advanced
         if new_steps <= self.prev_steps || now <= self.prev_time {
             // Reset on backwards seek to prevent breakage from seeking to the end for length determination
@@ -515,7 +515,7 @@ impl Estimator {
 }
 
 pub(crate) struct AtomicPosition {
-    pub(crate) pos: AtomicU64,
+    pub(crate) pos: AtomicU128,
     capacity: AtomicU8,
     prev: AtomicU64,
     start: Instant,
@@ -524,7 +524,7 @@ pub(crate) struct AtomicPosition {
 impl AtomicPosition {
     pub(crate) fn new() -> Self {
         Self {
-            pos: AtomicU64::new(0),
+            pos: AtomicU128::new(0),
             capacity: AtomicU8::new(MAX_BURST),
             prev: AtomicU64::new(0),
             start: Instant::now(),
@@ -572,11 +572,11 @@ impl AtomicPosition {
         self.prev.store(elapsed, Ordering::Release);
     }
 
-    pub(crate) fn inc(&self, delta: u64) {
+    pub(crate) fn inc(&self, delta: u128) {
         self.pos.fetch_add(delta, Ordering::SeqCst);
     }
 
-    pub(crate) fn set(&self, pos: u64) {
+    pub(crate) fn set(&self, pos: u128) {
         self.pos.store(pos, Ordering::Release);
     }
 }

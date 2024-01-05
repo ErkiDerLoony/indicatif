@@ -43,7 +43,7 @@ impl ProgressBar {
     ///
     /// [set]: ProgressBar::set_draw_target
     /// [draw target]: ProgressDrawTarget
-    pub fn new(len: u64) -> Self {
+    pub fn new(len: u128) -> Self {
         Self::with_draw_target(Some(len), ProgressDrawTarget::stderr())
     }
 
@@ -56,7 +56,7 @@ impl ProgressBar {
     }
 
     /// Creates a new progress bar with a given length and draw target
-    pub fn with_draw_target(len: Option<u64>, draw_target: ProgressDrawTarget) -> Self {
+    pub fn with_draw_target(len: Option<u128>, draw_target: ProgressDrawTarget) -> Self {
         let pos = Arc::new(AtomicPosition::new());
         Self {
             state: Arc::new(Mutex::new(BarState::new(len, draw_target, pos.clone()))),
@@ -105,7 +105,7 @@ impl ProgressBar {
     }
 
     /// A convenience builder-like function for a progress bar with a given position
-    pub fn with_position(self, pos: u64) -> Self {
+    pub fn with_position(self, pos: u128) -> Self {
         self.state().state.set_pos(pos);
         self
     }
@@ -215,7 +215,7 @@ impl ProgressBar {
     }
 
     /// Advances the position of the progress bar by `delta`
-    pub fn inc(&self, delta: u64) {
+    pub fn inc(&self, delta: u128) {
         self.pos.inc(delta);
         let now = Instant::now();
         if self.pos.allow(now) {
@@ -255,7 +255,7 @@ impl ProgressBar {
     }
 
     /// Sets the position of the progress bar
-    pub fn set_position(&self, pos: u64) {
+    pub fn set_position(&self, pos: u128) {
         self.pos.set(pos);
         let now = Instant::now();
         if self.pos.allow(now) {
@@ -264,12 +264,12 @@ impl ProgressBar {
     }
 
     /// Sets the length of the progress bar
-    pub fn set_length(&self, len: u64) {
+    pub fn set_length(&self, len: u128) {
         self.state().set_length(Instant::now(), len);
     }
 
     /// Increase the length of the progress bar
-    pub fn inc_length(&self, delta: u64) {
+    pub fn inc_length(&self, delta: u128) {
         self.state().inc_length(Instant::now(), delta);
     }
 
@@ -543,12 +543,12 @@ impl ProgressBar {
     }
 
     /// Returns the current position
-    pub fn position(&self) -> u64 {
+    pub fn position(&self) -> u128 {
         self.state().state.pos()
     }
 
     /// Returns the current length
-    pub fn length(&self) -> Option<u64> {
+    pub fn length(&self) -> Option<u128> {
         self.state().state.len()
     }
 
@@ -757,7 +757,7 @@ mod tests {
     #[test]
     fn it_can_wrap_a_reader() {
         let bytes = &b"I am an implementation of io::Read"[..];
-        let pb = ProgressBar::new(bytes.len() as u64);
+        let pb = ProgressBar::new(bytes.len() as u128);
         let mut reader = pb.wrap_read(bytes);
         let mut writer = Vec::new();
         io::copy(&mut reader, &mut writer).unwrap();
@@ -768,7 +768,7 @@ mod tests {
     fn it_can_wrap_a_writer() {
         let bytes = b"implementation of io::Read";
         let mut reader = &bytes[..];
-        let pb = ProgressBar::new(bytes.len() as u64);
+        let pb = ProgressBar::new(bytes.len() as u128);
         let writer = Vec::new();
         let mut writer = pb.wrap_write(writer);
         io::copy(&mut reader, &mut writer).unwrap();
