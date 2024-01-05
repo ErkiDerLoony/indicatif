@@ -16,7 +16,7 @@ where
     fn progress_with(self, progress: ProgressBar) -> ProgressBarIter<Self>;
 
     /// Wrap an iterator with an explicit element count.
-    fn progress_count(self, len: u64) -> ProgressBarIter<Self> {
+    fn progress_count(self, len: u128) -> ProgressBarIter<Self> {
         self.progress_with(ProgressBar::new(len))
     }
 
@@ -24,7 +24,7 @@ where
     where
         Self: IndexedParallelIterator,
     {
-        let len = u64::try_from(self.len()).unwrap();
+        let len = u128::try_from(self.len()).unwrap();
         self.progress_count(len)
     }
 
@@ -33,7 +33,7 @@ where
     where
         Self: IndexedParallelIterator,
     {
-        let len = u64::try_from(self.len()).unwrap();
+        let len = u128::try_from(self.len()).unwrap();
         let bar = ProgressBar::new(len).with_style(style);
         self.progress_with(bar)
     }
@@ -221,7 +221,7 @@ mod test {
 
         wrap(v.par_iter().progress_count(3));
         wrap({
-            let pb = ProgressBar::new(v.len() as u64);
+            let pb = ProgressBar::new(v.len() as u128);
             v.par_iter().progress_with(pb)
         });
 
