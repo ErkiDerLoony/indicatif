@@ -40,7 +40,7 @@ fn main() {
     let start = Instant::now();
 
     // mimic cargo progress bar although it behaves a bit different
-    let pb = ProgressBar::new(CRATES.len() as u64);
+    let pb = ProgressBar::new(CRATES.len() as u128);
     pb.set_style(
         ProgressStyle::with_template(
             // note that bar size is fixed unlike cargo which is dynamic

@@ -35,7 +35,7 @@ struct Item {
 #[derive(Clone, Debug)]
 struct Index(usize);
 
-const PB_LEN: u64 = 32;
+const PB_LEN: u128 = 32;
 static ELEM_IDX: AtomicUsize = AtomicUsize::new(0);
 
 static ELEMENTS: Lazy<[Elem; 27]> = Lazy::new(|| {

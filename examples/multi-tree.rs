@@ -162,7 +162,7 @@ fn get_action(rng: &mut dyn RngCore, tree: &Mutex<Vec<&Elem>>) -> Option<Action>
             let len = e.progress_bar.length().unwrap();
             len - pos
         })
-        .sum::<u64>();
+        .sum::<u128>();
 
     if sum_free == 0 && list_len == elem_len {
         // nothing to do more

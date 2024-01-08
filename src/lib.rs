@@ -231,6 +231,7 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(unreachable_pub)]
+#![forbid(unsafe_code)]
 
 mod draw_target;
 mod format;

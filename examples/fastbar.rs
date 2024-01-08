@@ -1,6 +1,6 @@
 use indicatif::ProgressBar;
 
-fn many_units_of_easy_work(n: u64, label: &str) {
+fn many_units_of_easy_work(n: u128, label: &str) {
     let pb = ProgressBar::new(n);
 
     let mut sum = 0;
@@ -15,7 +15,7 @@ fn many_units_of_easy_work(n: u64, label: &str) {
 }
 
 fn main() {
-    const N: u64 = 1 << 20;
+    const N: u128 = 1 << 20;
 
     // Perform a long sequence of many simple computations monitored by a
     // default progress bar.

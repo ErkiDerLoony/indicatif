@@ -438,7 +438,7 @@ impl ProgressBar {
     /// # fn test () -> io::Result<()> {
     /// let source = File::open("work.txt")?;
     /// let mut target = File::create("done.txt")?;
-    /// let pb = ProgressBar::new(source.metadata()?.len());
+    /// let pb = ProgressBar::new(source.metadata()?.len().into());
     /// io::copy(&mut pb.wrap_read(source), &mut target);
     /// # Ok(())
     /// # }
@@ -459,7 +459,7 @@ impl ProgressBar {
     /// # fn test () -> io::Result<()> {
     /// let mut source = File::open("work.txt")?;
     /// let target = File::create("done.txt")?;
-    /// let pb = ProgressBar::new(source.metadata()?.len());
+    /// let pb = ProgressBar::new(source.metadata()?.len().into());
     /// io::copy(&mut source, &mut pb.wrap_write(target));
     /// # Ok(())
     /// # }
