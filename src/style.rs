@@ -282,6 +282,9 @@ impl ProgressStyle {
                             "percent" => buf
                                 .write_fmt(format_args!("{:.*}", 0, state.fraction() * 100f32))
                                 .unwrap(),
+                            "percent_precise" => buf
+                                .write_fmt(format_args!("{:.*}", 3, state.fraction() * 100f32))
+                                .unwrap(),
                             "bytes" => buf.write_fmt(format_args!("{}", HumanBytes(pos))).unwrap(),
                             "total_bytes" => {
                                 buf.write_fmt(format_args!("{}", HumanBytes(len))).unwrap();
@@ -309,6 +312,12 @@ impl ProgressStyle {
                                 .unwrap(),
                             "bytes_per_sec" => buf
                                 .write_fmt(format_args!("{}/s", HumanBytes(state.per_sec() as u128)))
+                                .unwrap(),
+                            "decimal_bytes_per_sec" => buf
+                                .write_fmt(format_args!(
+                                    "{}/s",
+                                    DecimalBytes(state.per_sec() as u64)
+                                ))
                                 .unwrap(),
                             "binary_bytes_per_sec" => buf
                                 .write_fmt(format_args!(
@@ -770,6 +779,8 @@ mod tests {
 
     use super::*;
     use crate::state::{AtomicPosition, ProgressState};
+
+    use console::set_colors_enabled;
     use std::sync::Mutex;
 
     #[test]
@@ -855,7 +866,6 @@ mod tests {
 
     #[test]
     fn test_expand_template_flags() {
-        use console::set_colors_enabled;
         set_colors_enabled(true);
 
         const WIDTH: u16 = 80;
@@ -916,6 +926,8 @@ mod tests {
 
     #[test]
     fn wide_element_style() {
+        set_colors_enabled(true);
+
         const CHARS: &str = "=>-";
         const WIDTH: u16 = 8;
         let pos = Arc::new(AtomicPosition::new());
