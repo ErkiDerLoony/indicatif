@@ -316,7 +316,7 @@ impl ProgressStyle {
                             "decimal_bytes_per_sec" => buf
                                 .write_fmt(format_args!(
                                     "{}/s",
-                                    DecimalBytes(state.per_sec() as u64)
+                                    DecimalBytes(state.per_sec() as u128)
                                 ))
                                 .unwrap(),
                             "binary_bytes_per_sec" => buf
